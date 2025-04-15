@@ -1,0 +1,26 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Game</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas id="gameCanvas" width="1000" height="700"></canvas>
+    <script src="game.js"></script>
+    <!-- HTML에 추가 -->
+    <div id="levelUpUI" style="display: none;" class="overlay">
+      <div id="levelUpBackground">
+        <h2>레벨업!</h2>
+        <p>한 가지 능력을 선택해주세요.</p>
+      </div>
+      <div id="skillCards" class="card-wrapper"></div>
+    </div>
+
+    <div id="gameOverUI">
+      <h2>게임 오버</h2>
+      <div id="finalScore">최종 점수 : </div>
+      <button onclick="restart()">다시 시작</button>
+    </div>
+  </body>
+</html>
