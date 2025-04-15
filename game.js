@@ -174,10 +174,10 @@ function checkCollisions() {
 }
 
 function update() {
-    if (keys["w"]) player.y - player.speed > 0 ? player.y -= player.speed : 0;
-    if (keys["s"]) player.y + player.speed < screenHeight - playerWidth ? player.y += player.speed : screenHeight - playerWidth;
-    if (keys["a"]) player.x - player.speed > 0 ? player.x -= player.speed : 0;
-    if (keys["d"]) player.x + player.speed < screenWidth - playerWidth ? player.x += player.speed : screenWidth - playerWidth;
+    if (keys["w"] || keys["ㅈ"] || keys["ArrowUp"]) player.y - player.speed > 0 ? player.y -= player.speed : 0;
+    if (keys["s"] || keys["ㄴ"] || keys["ArrowDown"]) player.y + player.speed < screenHeight - playerWidth ? player.y += player.speed : screenHeight - playerWidth;
+    if (keys["a"] || keys["ㅁ"] || keys["ArrowLeft"]) player.x - player.speed > 0 ? player.x -= player.speed : 0;
+    if (keys["d"] || keys["ㄹ"] || keys["ArrowRight"]) player.x + player.speed < screenWidth - playerWidth ? player.x += player.speed : screenWidth - playerWidth;
     for (bullet of bullets) {
         let ratio = (bullet.dx**2 + bullet.dy**2) ** 0.5 / bulletSpeed
         bullet.x += bullet.dx / ratio
