@@ -53,7 +53,7 @@ body {
 .skill-card {
     width: 200px;
     height: 320px;
-    background-image: url('assets/card.png');
+    background-image: url('../assets/card.png');
     background-size: cover;
     position: relative;
     color: white;

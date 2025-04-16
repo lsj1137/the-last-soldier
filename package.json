@@ -5,6 +5,7 @@
   "name": "my-electron-game",
   "version": "1.0.0",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "start": "electron ."
   }

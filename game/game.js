@@ -1,19 +1,19 @@
-// import { fasterShoot, biggerBullet, bombRain, fasterBullet, heal, medikit, penetratingBullet, smallerPlayer } from "./skills";
+import { allSkills } from "./skills.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const backgroundImage = new Image();
-backgroundImage.src = "assets/background.png";
+backgroundImage.src = "./assets/background.png";
 const playerImage = new Image();
-playerImage.src = "assets/character.png"
+playerImage.src = "./assets/character.png"
 const enemyImage = new Image();
-enemyImage.src = "assets/zombie.png"
+enemyImage.src = "./assets/zombie.png"
 const bulletImage = new Image();
-bulletImage.src = "assets/bullet.png"
+bulletImage.src = "./assets/bullet.png"
 const heartImage = new Image();
-heartImage.src = "assets/heart_filled.png"
+heartImage.src = "./assets/heart_filled.png"
 const heartBlackImage = new Image();
-heartBlackImage.src = "assets/heart_not_filled.png"
+heartBlackImage.src = "./assets/heart_not_filled.png"
 
 const screenWidth = 1000;
 const screenHeight = 700;
@@ -51,7 +51,7 @@ let score = 0;
 let levelUpStd = 50;
 let levelUpGap = 50;
 let powerBullet = false;
-let stopZombies = false;
+export let stopZombies = false;
 
 let player = {
     x: screenWidth/2 - playerWidth/2,
@@ -60,57 +60,6 @@ let player = {
     width: playerWidth
 };
 
-const allSkills = [
-    { name: "빠른 재장전", icon: "assets/skills/quick_reload.png", eng:"fasterShoot", dis:"발사 속도가 10% 증가합니다" },
-    { name: "커진 총알", icon: "assets/skills/big_bullet.png", eng:"biggerBullet", dis:"총알의 크기가 2 증가합니다"  },
-    { name: "빨라진 총알", icon: "assets/skills/faster_bullet.png", eng:"fasterBullet", dis:"총알의 이동 속도가 10% 증가합니다"  },
-    { name: "정교한 움직임", icon: "assets/skills/accurate_move.png", eng:"accurateMove", dis:"캐릭터가 3만큼 작아지고, 속도가 0.6만큼 줄어듭니다"  },
-    { name: "꿰뚫는 총알", icon: "assets/skills/penetrating_bullet.png", eng:"penetratingBullet", dis:"총알이 좀비를 뚫고 지나갑니다"  },
-    { name: "완전한 치유", icon: "assets/skills/heal.png", eng:"heal", dis:"체력이 전부 회복됩니다"  },
-    { name: "응급 처치", icon: "assets/skills/medikit.png", eng:"medikit", dis:"체력이 1 회복됩니다"  },
-    { name: "융단 폭격", icon: "assets/skills/bomb_rain.png", eng:"bombRain", dis:"좀비가 전부 사라집니다"  },
-    { name: "정신 교란", icon: "assets/skills/pause.png", eng:"pause", dis:"2.5초간 좀비들이 멈춥니다"  }
-];
-
-function fasterShoot() {
-    shootTime *= 0.9
-}
-
-function biggerBullet() {
-    bulletWidth += 2
-}
-
-function fasterBullet() {
-    bulletSpeed *= 1.1
-}
-
-function accurateMove() {
-    player.width -= 3
-    player.speed -= 0.6
-}
-
-function penetratingBullet() {
-    powerBullet = true
-}
-
-function heal() {
-    life = 3;
-}
-
-function medikit() {
-    life + 1 < 4 ? life += 1 : life = 3;
-}
-
-function bombRain() {
-    enemies = [];
-}
-
-function pause() {
-    stopZombies = true;
-    setTimeout(()=>{
-        stopZombies = false;
-    }, 2500)
-}
 
 function spawnEnemy() {
     let enemyX = Math.random() * screenWidth
@@ -178,13 +127,13 @@ function update() {
     if (keys["s"] || keys["ㄴ"] || keys["ArrowDown"]) player.y + player.speed < screenHeight - playerWidth ? player.y += player.speed : screenHeight - playerWidth;
     if (keys["a"] || keys["ㅁ"] || keys["ArrowLeft"]) player.x - player.speed > 0 ? player.x -= player.speed : 0;
     if (keys["d"] || keys["ㄹ"] || keys["ArrowRight"]) player.x + player.speed < screenWidth - playerWidth ? player.x += player.speed : screenWidth - playerWidth;
-    for (bullet of bullets) {
+    for (let bullet of bullets) {
         let ratio = (bullet.dx**2 + bullet.dy**2) ** 0.5 / bulletSpeed
         bullet.x += bullet.dx / ratio
         bullet.y += bullet.dy / ratio
     }
     if (!stopZombies) {
-        for (enemy of enemies) {
+        for (let enemy of enemies) {
             let ratio = (enemy.dx**2 + enemy.dy**2) ** 0.5
             enemy.x += enemy.dx / ratio
             enemy.y += enemy.dy / ratio
@@ -200,11 +149,11 @@ function draw() {
     // 플레이어
     ctx.drawImage(playerImage, player.x, player.y, player.width, player.width*1.4);
     // 총알
-    for (bullet of bullets) {
+    for (let bullet of bullets) {
         ctx.drawImage(bulletImage, bullet.x, bullet.y, bullet.width, bullet.width*1.2);
     }
     // 적
-    for (enemy of enemies) {
+    for (let enemy of enemies) {
         ctx.drawImage(enemyImage, enemy.x, enemy.y, enemy.width, enemy.width*1.5);
     }
     ctx.fillStyle = "white";
@@ -228,7 +177,6 @@ function gc() {
 
 function levelUp() {
     isPaused = true;
-    isLevelUp = true;
     clearIntervals();
     level += 1;
     levelUpGap += 10;
@@ -255,47 +203,49 @@ function showLevelUpChoices() {
             <p class="skill-dis">${skill.dis}</p>
             <strong class="skill-name">${skill.name}</strong>
         `;
-        card.onclick = () => chooseSkill(skill.eng);
+        card.onclick = () => chooseSkill(skill);
         wrapper.appendChild(card);
     });
 
     document.getElementById("levelUpUI").style.display = "block";
 }
 
-function chooseSkill(skillName) {
-    switch (skillName) {
+function chooseSkill(skill) {
+    switch (skill.eng) {
         case 'fasterShoot':
-            fasterShoot()
+            shootTime = skill.fn(shootTime)
             break
         case 'biggerBullet':
-            biggerBullet()
+            bulletWidth = skill.fn(bulletWidth)
             break
         case 'fasterBullet':
-            fasterBullet()
+            bulletSpeed = skill.fn(bulletSpeed)
             break
-        case 'smallerPlayer':
-            accurateMove()
+        case 'accurateMove':
+            player = skill.fn(player)
             break
         case 'penetratingBullet':
-            penetratingBullet()
+            powerBullet = skill.fn(powerBullet)
             break
         case 'heal':
-            heal()
+            life = skill.fn(life)
             break
         case 'medikit':
-            medikit()
+            life = skill.fn(life)
             break
         case 'bombRain':
-            bombRain()
+            enemies = skill.fn(enemies)
             break
-        case 'pause':
-            pause()
+        case 'pause':        
+            stopZombies = true;
+            setTimeout(()=>{
+                stopZombies = false;
+            }, 2500)
             break
     }
 
     document.getElementById("levelUpUI").style.display = "none";
     isPaused = false;
-    isLevelUp = false;
     setIntervals()
 }
 
@@ -321,7 +271,6 @@ function clearIntervals() {
 
 function gameOver() {
     isPaused = true;
-    isLevelUp = true;
     clearIntervals();
     showGameOverScreen()
 }
@@ -359,9 +308,9 @@ function restart() {
     document.getElementById("finalScore").textContent = "최종 점수 : ";
     document.getElementById("gameOverUI").style.display = "none";
     isPaused = false;
-    isLevelUp = false;
     setIntervals()
 }
 
+window.restart = restart
 gameLoop();
 setIntervals();
