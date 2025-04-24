@@ -1,4 +1,5 @@
 body {
+    overflow: hidden;
     margin: 0;
     padding: 0;
     height: 100vh; /* 화면 전체 높이를 사용 */
