@@ -14,6 +14,9 @@ const heartImage = new Image();
 heartImage.src = "./assets/heart_filled.png"
 const heartBlackImage = new Image();
 heartBlackImage.src = "./assets/heart_not_filled.png"
+const orbitImage = new Image();
+orbitImage.src = "./assets/orbit.png"
+
 
 const screenWidth = 1000;
 const screenHeight = 700;
@@ -35,6 +38,7 @@ let enemies = [];
 let spawnInterval = null;
 let bullets = [];
 let shootInterval = null;
+let orbits = [];
 
 // 변수
 let level = 1;
@@ -53,6 +57,9 @@ let score = 0;
 let levelUpStd = 50;
 let levelUpGap = 50;
 export let stopZombies = false;
+let orbitWidth = 20;
+let orbitSpeed = 0.06;
+let orbitRadius = playerWidth*1.5;
 
 let player = {
     x: screenWidth/2 - playerWidth/2,
@@ -65,6 +72,7 @@ function initValues() {
     // 적, 탄환
     enemies = [];
     bullets = [];
+    orbits = [];
     
     // 변수
     level = 1;
@@ -79,6 +87,9 @@ function initValues() {
     score = 0;
     levelUpStd = 50;
     levelUpGap = 50;
+    orbitWidth = 20;
+    orbitSpeed = 0.06;
+    orbitRadius = playerWidth*1.5;
 
     // 플레이어
     player.x = screenWidth/2 - playerWidth/2,
@@ -136,6 +147,20 @@ function checkCollisions() {
             }
         } 
     }
+    for (let i = orbits.length - 1; i >= 0; i--) {
+        const orbit = orbits[i];
+        for (let j = enemies.length - 1; j >= 0; j--) {
+            const enemy = enemies[j];
+            if (isColliding(orbit, enemy)) {
+                enemies.splice(j, 1);
+                score += 10;
+                if (score >= levelUpStd) {
+                    levelUp()
+                }
+                break;
+            }
+        }
+    }
     for (let j = enemies.length - 1; j >= 0; j--) {
         const enemy = enemies[j];
         if (isColliding(player, enemy)) {
@@ -146,7 +171,7 @@ function checkCollisions() {
             }
             break;
         }
-    } 
+    }
 }
 
 function update() {
@@ -154,18 +179,23 @@ function update() {
     if (keys["s"] || keys["ㄴ"] || keys["ArrowDown"]) player.y + player.speed < screenHeight - playerWidth ? player.y += player.speed : screenHeight - playerWidth;
     if (keys["a"] || keys["ㅁ"] || keys["ArrowLeft"]) player.x - player.speed > 0 ? player.x -= player.speed : 0;
     if (keys["d"] || keys["ㄹ"] || keys["ArrowRight"]) player.x + player.speed < screenWidth - playerWidth ? player.x += player.speed : screenWidth - playerWidth;
-    for (let bullet of bullets) {
+    bullets.forEach(bullet => {
         let ratio = (bullet.dx**2 + bullet.dy**2) ** 0.5 / bulletSpeed
         bullet.x += bullet.dx / ratio
         bullet.y += bullet.dy / ratio
-    }
+    })
     if (!stopZombies) {
-        for (let enemy of enemies) {
+        enemies.forEach(enemy => {
             let ratio = (enemy.dx**2 + enemy.dy**2) ** 0.5
             enemy.x += enemy.dx / ratio * enemySpeed
             enemy.y += enemy.dy / ratio * enemySpeed
-        }
+        })
     }
+    orbits.forEach(orbit => {
+        orbit.angle += orbitSpeed;
+        orbit.x = player.x + playerWidth/2  + orbitRadius * Math.cos(orbit.angle);
+        orbit.y = player.y + playerWidth/2  + orbitRadius * Math.sin(orbit.angle);
+    });
 }
 
 function draw() {
@@ -176,13 +206,16 @@ function draw() {
     // 플레이어
     ctx.drawImage(playerImage, player.x, player.y, player.width, player.width*1.4);
     // 총알
-    for (let bullet of bullets) {
+    bullets.forEach(bullet => {
         ctx.drawImage(bulletImage, bullet.x, bullet.y, bullet.width, bullet.width*1.2);
-    }
+    });
     // 적
-    for (let enemy of enemies) {
+    enemies.forEach(enemy => {
         ctx.drawImage(enemyImage, enemy.x, enemy.y, enemy.width, enemy.width*1.5);
-    }
+    });
+    orbits.forEach(orbit => {
+        ctx.drawImage(orbitImage, orbit.x - orbitWidth/2, orbit.y - orbitWidth/2, orbitWidth, orbitWidth);
+    });
     ctx.fillStyle = "white";
     ctx.font = "18px Arial";
     ctx.fillText("Level: " + level, 10, 30);
@@ -209,34 +242,46 @@ function levelUp() {
     levelUpGap += 10;
     levelUpStd += levelUpGap;
     enemyUpgrade();
-    showLevelUpChoices();
+    showLevelUpOptions();
 }
 
 function enemyUpgrade() {
-    if (enemyWidth > 14) {
+    if (enemyWidth > 20) {
         enemyWidth -= 2;
     }
     if (enemySpawnTime > 200) {
         enemySpawnTime -= 200;
-    } else if (level>30 && enemySpawnTime > 150) {
-        enemySpawnTime -= 10;
+    } else if (level>20 && enemySpawnTime > 20) {
+        enemySpawnTime -= 20;
     }
     if (level%2==0 && enemySpeed < 2.5) {
         enemySpeed += 0.1
     }
 }
 
-function showLevelUpChoices() {
+function selectLevelUpOptions() {
     const shuffled = allSkills.sort(() => 0.5 - Math.random());
     let selected = [];
     let index = 0
     while (selected.length<3) {
         let option = shuffled[index];
         index += 1;
-        if (level >= option.openLevel) {
-            selected.push(option);
+        if (level < option.openLevel) {
+            continue
         }
+        if (level%2==0 && option.eng==="orbitShield") {
+            continue
+        }
+        if (option.eng==="accurateMove" && player.width<=16) {
+            continue
+        }
+        selected.push(option);
     }
+    return selected;
+}
+
+function showLevelUpOptions() {
+    let selected = selectLevelUpOptions();
     const wrapper = document.getElementById("skillCards");
     wrapper.innerHTML = "";
     selected.forEach(skill => {
@@ -285,6 +330,9 @@ function chooseSkill(skill) {
             setTimeout(()=>{
                 stopZombies = false;
             }, 2500)
+            break
+        case 'orbitShield':
+            orbits = skill.fn(player, orbits);
             break
     }
 

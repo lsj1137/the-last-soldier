@@ -5,6 +5,7 @@ const allSkills = [
     { name: "정교한 움직임", icon: "./assets/skills/accurate_move.png", eng:"accurateMove", dis:"캐릭터가 작아지고, 이동 속도가 줄어듭니다", fn:accurateMove, openLevel: 1 },
     { name: "응급 처치", icon: "./assets/skills/medikit.png", eng:"medikit", dis:"체력이 1 회복됩니다", fn: medikit, openLevel: 5 },
     { name: "정신 교란", icon: "./assets/skills/pause.png", eng:"pause", dis:"좀비들이 잠시 멈춥니다", openLevel: 5 },
+    { name: "자기장 실드", icon: "./assets/skills/orbitShield.png", eng:"orbitShield", dis:"주위를 떠도는 전자가 추가됩니다.", fn: orbitShield, openLevel: 1},
     { name: "꿰뚫는 총알", icon: "./assets/skills/penetrating_bullet.png", eng:"penetratingBullet", dis:"총알이 좀비를 한 마리 더 뚫고 지나갑니다", fn: penetratingBullet, openLevel: 10 },
     { name: "완전한 치유", icon: "./assets/skills/heal.png", eng:"heal", dis:"체력이 전부 회복됩니다", fn: heal, openLevel: 15 },
     { name: "융단 폭격", icon: "./assets/skills/bomb_rain.png", eng:"bombRain", dis:"좀비가 전부 사라집니다", fn: bombRain, openLevel: 20 },
@@ -26,9 +27,29 @@ function fasterBullet(bulletSpeed) {
 }
 
 function accurateMove(player) {
-    player.width -= 3;
+    if (player.width>16) {
+        player.width -= 4;
+    }
     player.speed -= 0.6;
     return player;
+}
+
+function orbitShield(player, orbits) {
+    let orbitRadius = 40;
+    let orbitWidth = 20;
+    let count = orbits.length;
+    let betweenAngle = 0;
+    betweenAngle = 2 * Math.PI / (count + 1);
+    let newOrbits = [];
+    for (let i=0; i<count+1; i++) {
+        newOrbits.push({
+            x: player.x + player.width/2 + orbitRadius,
+            y: player.y + player.width/2 + orbitRadius,
+            angle: betweenAngle * i,
+            width: orbitWidth
+        })
+    }
+    return newOrbits
 }
 
 function penetratingBullet(bulletHit) {
