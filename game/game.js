@@ -44,13 +44,14 @@ let playerWidth = 40;
 let life = 3;
 let enemySpawnTime = 2000;
 let enemyWidth = 32;
+let enemySpeed = 1;
 let shootTime = 1200;
 let bulletWidth = 12;
 let bulletSpeed = 5;
+let bulletHit = 1;
 let score = 0;
 let levelUpStd = 50;
 let levelUpGap = 50;
-let powerBullet = false;
 export let stopZombies = false;
 
 let player = {
@@ -60,6 +61,31 @@ let player = {
     width: playerWidth
 };
 
+function initValues() {
+    // 적, 탄환
+    enemies = [];
+    bullets = [];
+    
+    // 변수
+    level = 1;
+    isPaused = false;
+    life = 3;
+    enemySpawnTime = 2000;
+    enemyWidth = 32;
+    shootTime = 1200;
+    bulletWidth = 12;
+    bulletSpeed = 5;
+    bulletHit = 1;
+    score = 0;
+    levelUpStd = 50;
+    levelUpGap = 50;
+
+    // 플레이어
+    player.x = screenWidth/2 - playerWidth/2,
+    player.y = screenHeight/2 - playerWidth/2,
+    player.speed = playerSpeed,
+    player.width = playerWidth
+}
 
 function spawnEnemy() {
     let enemyX = Math.random() * screenWidth
@@ -79,7 +105,7 @@ function spawnEnemy() {
 function shoot() {
     let dx = mouseX - (player.x + playerWidth/2);
     let dy = mouseY - (player.y + playerWidth/2);
-    bullets.push({ x: player.x+playerWidth/2-bulletWidth/2, y: player.y+playerWidth/2-bulletWidth/2, dx: dx, dy: dy, width: bulletWidth});
+    bullets.push({ x: player.x+playerWidth/2-bulletWidth/2, y: player.y+playerWidth/2-bulletWidth/2, dx: dx, dy: dy, width: bulletWidth, hit: bulletHit});
 }
 
 function isColliding(a, b) {
@@ -98,7 +124,8 @@ function checkCollisions() {
             const enemy = enemies[j];
             if (isColliding(bullet, enemy)) {
                 enemies.splice(j, 1);
-                if (!powerBullet) {
+                bullet.hit -= 1;
+                if (bullet.hit===0) {
                     bullets.splice(i, 1);
                 }
                 score += 10;
@@ -135,8 +162,8 @@ function update() {
     if (!stopZombies) {
         for (let enemy of enemies) {
             let ratio = (enemy.dx**2 + enemy.dy**2) ** 0.5
-            enemy.x += enemy.dx / ratio
-            enemy.y += enemy.dy / ratio
+            enemy.x += enemy.dx / ratio * enemySpeed
+            enemy.y += enemy.dy / ratio * enemySpeed
         }
     }
 }
@@ -181,18 +208,35 @@ function levelUp() {
     level += 1;
     levelUpGap += 10;
     levelUpStd += levelUpGap;
-    if (enemyWidth > 10) {
+    enemyUpgrade();
+    showLevelUpChoices();
+}
+
+function enemyUpgrade() {
+    if (enemyWidth > 14) {
         enemyWidth -= 2;
     }
     if (enemySpawnTime > 200) {
         enemySpawnTime -= 200;
+    } else if (level>30 && enemySpawnTime > 150) {
+        enemySpawnTime -= 10;
     }
-    showLevelUpChoices();
+    if (level%2==0 && enemySpeed < 2.5) {
+        enemySpeed += 0.1
+    }
 }
 
 function showLevelUpChoices() {
     const shuffled = allSkills.sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 3);
+    let selected = [];
+    let index = 0
+    while (selected.length<3) {
+        let option = shuffled[index];
+        index += 1;
+        if (level >= option.openLevel) {
+            selected.push(option);
+        }
+    }
     const wrapper = document.getElementById("skillCards");
     wrapper.innerHTML = "";
     selected.forEach(skill => {
@@ -225,7 +269,7 @@ function chooseSkill(skill) {
             player = skill.fn(player)
             break
         case 'penetratingBullet':
-            powerBullet = skill.fn(powerBullet)
+            bulletHit = skill.fn(bulletHit)
             break
         case 'heal':
             life = skill.fn(life)
@@ -281,30 +325,7 @@ function showGameOverScreen() {
 }
 
 function restart() {
-    // 적, 탄환
-    enemies = [];
-    bullets = [];
-    
-    // 변수
-    level = 1;
-    isPaused = false;
-    life = 3;
-    enemySpawnTime = 2000;
-    enemyWidth = 32;
-    shootTime = 1200;
-    bulletWidth = 12;
-    bulletSpeed = 5;
-    score = 0;
-    levelUpStd = 50;
-    levelUpGap = 50;
-    powerBullet = false;
-
-    // 플레이어
-    player.x = screenWidth/2 - playerWidth/2,
-    player.y = screenHeight/2 - playerWidth/2,
-    player.speed = playerSpeed,
-    player.width = playerWidth
-
+    initValues();
     document.getElementById("finalScore").textContent = "최종 점수 : ";
     document.getElementById("gameOverUI").style.display = "none";
     isPaused = false;
