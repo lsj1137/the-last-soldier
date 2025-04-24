@@ -1,3 +1,5 @@
+import { playerRatio, orbitRatio } from "./game.js";
+
 const allSkills = [
     { name: "빠른 재장전", icon: "./assets/skills/quick_reload.png", eng:"fasterShoot", dis:"발사 속도가 증가합니다", fn: fasterShoot, openLevel: 1 },
     { name: "커진 총알", icon: "./assets/skills/big_bullet.png", eng:"biggerBullet", dis:"총알의 크기가 증가합니다", fn: biggerBullet, openLevel: 1 },
@@ -29,6 +31,7 @@ function fasterBullet(bulletSpeed) {
 function accurateMove(player) {
     if (player.width>16) {
         player.width -= 4;
+        player.height = player.width*playerRatio;
     }
     player.speed -= 0.6;
     return player;
@@ -46,7 +49,8 @@ function orbitShield(player, orbits) {
             x: player.x + player.width/2 + orbitRadius,
             y: player.y + player.width/2 + orbitRadius,
             angle: betweenAngle * i,
-            width: orbitWidth
+            width: orbitWidth,
+            height: orbitWidth*orbitRatio
         })
     }
     return newOrbits

@@ -20,6 +20,10 @@ orbitImage.src = "./assets/orbit.png"
 
 const screenWidth = 1000;
 const screenHeight = 700;
+export const playerRatio = 429/305;
+const enemyRatio = 427/289;
+export const bulletRatio = 405/305;
+export const orbitRatio = 319/284;
 
 let mouseX = 0;
 let mouseY = 0;
@@ -65,7 +69,8 @@ let player = {
     x: screenWidth/2 - playerWidth/2,
     y: screenHeight/2 - playerWidth/2,
     speed: playerSpeed,
-    width: playerWidth
+    width: playerWidth,
+    height: playerWidth*playerRatio
 };
 
 function initValues() {
@@ -77,9 +82,12 @@ function initValues() {
     // 변수
     level = 1;
     isPaused = false;
+    playerSpeed = 6;
+    playerWidth = 40;
     life = 3;
     enemySpawnTime = 2000;
     enemyWidth = 32;
+    enemySpeed = 1;
     shootTime = 1200;
     bulletWidth = 12;
     bulletSpeed = 5;
@@ -87,6 +95,7 @@ function initValues() {
     score = 0;
     levelUpStd = 50;
     levelUpGap = 50;
+    stopZombies = false;
     orbitWidth = 20;
     orbitSpeed = 0.06;
     orbitRadius = playerWidth*1.5;
@@ -96,35 +105,36 @@ function initValues() {
     player.y = screenHeight/2 - playerWidth/2,
     player.speed = playerSpeed,
     player.width = playerWidth
+    player.height = playerWidth*playerRatio
 }
 
 function spawnEnemy() {
     let enemyX = Math.random() * screenWidth
     let enemyY = Math.random() * screenHeight
-    while (enemyX > player.x - playerWidth 
-        && enemyX < player.x + playerWidth * 2 
-        && enemyY > player.y - playerWidth
-        && enemyY < player.y + playerWidth * 2) {
+    while (enemyX > player.x - playerWidth*2 
+        && enemyX < player.x + playerWidth*3 
+        && enemyY > player.y - playerWidth*2
+        && enemyY < player.y + playerWidth*3) {
         enemyX = Math.random() * screenWidth
         enemyY = Math.random() * screenHeight
     }
     let dx = player.x - enemyX;
     let dy = player.y - enemyY;
-    enemies.push({ x: enemyX, y: enemyY, dx: dx, dy: dy, width: enemyWidth });
+    enemies.push({ x: enemyX, y: enemyY, dx: dx, dy: dy, width: enemyWidth, height: enemyWidth*enemyRatio });
 }
 
 function shoot() {
     let dx = mouseX - (player.x + playerWidth/2);
     let dy = mouseY - (player.y + playerWidth/2);
-    bullets.push({ x: player.x+playerWidth/2-bulletWidth/2, y: player.y+playerWidth/2-bulletWidth/2, dx: dx, dy: dy, width: bulletWidth, hit: bulletHit});
+    bullets.push({ x: player.x+playerWidth/2-bulletWidth/2, y: player.y+playerWidth/2-bulletWidth/2, dx: dx, dy: dy, width: bulletWidth, height: bulletWidth*bulletRatio, hit: bulletHit});
 }
 
 function isColliding(a, b) {
     return (
         a.x < b.x + b.width &&
         a.x + a.width > b.x &&
-        a.y < b.y + b.width &&
-        a.y + a.width > b.y
+        a.y < b.y + b.height &&
+        a.y + a.height > b.y
     );
 }
 
@@ -204,17 +214,17 @@ function draw() {
     // 점수
     ctx.fillStyle = "black";
     // 플레이어
-    ctx.drawImage(playerImage, player.x, player.y, player.width, player.width*1.4);
+    ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
     // 총알
     bullets.forEach(bullet => {
-        ctx.drawImage(bulletImage, bullet.x, bullet.y, bullet.width, bullet.width*1.2);
+        ctx.drawImage(bulletImage, bullet.x, bullet.y, bullet.width, bullet.height);
     });
     // 적
     enemies.forEach(enemy => {
-        ctx.drawImage(enemyImage, enemy.x, enemy.y, enemy.width, enemy.width*1.5);
+        ctx.drawImage(enemyImage, enemy.x, enemy.y, enemy.width, enemy.height);
     });
     orbits.forEach(orbit => {
-        ctx.drawImage(orbitImage, orbit.x - orbitWidth/2, orbit.y - orbitWidth/2, orbitWidth, orbitWidth);
+        ctx.drawImage(orbitImage, orbit.x - orbitWidth/2, orbit.y - orbitWidth/2, orbit.width, orbit.height);
     });
     ctx.fillStyle = "white";
     ctx.font = "18px Arial";
@@ -273,6 +283,9 @@ function selectLevelUpOptions() {
             continue
         }
         if (option.eng==="accurateMove" && player.width<=16) {
+            continue
+        }
+        if (option.eng==="orbitShield" && orbits.length>=3) {
             continue
         }
         selected.push(option);
