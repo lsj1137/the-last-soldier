@@ -18,18 +18,17 @@ sequelize.sync() // 테이블 없으면 만들어줌
         console.error('DB 연결 실패:', err);
     });
 
-
-// 간단한 라우터
 app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
 
-// 사용자 목록 조회 API
+// 점수 조회
 app.get('/scoreboard', async (req, res) => {
     const scores = await Score.findAll();
     res.json(scores);
 });
 
+// 점수 등록
 app.post('/new-score', async (req, res)=>{
     console.log(req.body);
     const { name, score } = req.body;
@@ -45,6 +44,6 @@ app.post('/new-score', async (req, res)=>{
 })
 
 // 서버 시작
-app.listen(port, () => {
+app.listen(port, '0.0.0.0',() => {
     console.log(`서버가 포트 ${port}번에서 실행 중!`);
 });
