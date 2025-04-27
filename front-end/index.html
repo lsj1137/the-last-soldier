@@ -20,6 +20,19 @@
     <div id="gameOverUI">
       <h2>게임 오버</h2>
       <div id="finalScore">최종 점수 : </div>
+      <div id="scoreTable">
+        <div id="tags">
+          <p>순위</p>
+          <p>이름</p>
+          <p>점수</p>
+        </div>
+        <ul id="scores">
+        </ul>
+      </div>
+      <form id="submitScore">
+        <input id="nameInput" alt="name input" placeholder="이름" maxlength="12"></input>
+        <button onclick="submitScore(event)">점수 등록</button>
+      </form>
       <button onclick="restart()">다시 시작</button>
     </div>
   </body>

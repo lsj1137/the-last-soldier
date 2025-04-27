@@ -9,6 +9,10 @@ body {
     align-items: center; /* 세로 중앙 정렬 */
 }
 
+p {
+    margin: 0;
+}
+
 #gameCanvas {
     margin: 0;
 }
@@ -104,12 +108,59 @@ body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    gap: 20px;
 }
 
 #gameOverUI button {
     margin-top: 20px;
     font-weight: bold;
-    height: 34px;
+    height: 35px;
     width: 100%;
+}
+
+#scoreTable {
+    height: 350px;
+    width: 95%;
+    margin: 20px 0px;
+    border-radius: 10px;
+    border: 2px #333 solid ;
+    padding: 10px;
+}
+
+#tags {
+    display: flex;
+    width: 100%;
+    margin: 0px 0px;
+    justify-content: space-between;
+}
+
+#scores {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#scores li {
+    margin-top: 10px;
+}
+
+.rank-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+#submitScore {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+}
+
+#submitScore input {
+    height: 24px;
+    flex: 3;
+}
+
+#submitScore button {
+    margin: 0;
+    height: 30px;
+    flex: 1;
 }

@@ -1,5 +1,7 @@
 import { allSkills } from "./skills.js";
 
+const BASE_URL = "http://127.0.0.1:3000"
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const backgroundImage = new Image();
@@ -382,7 +384,36 @@ function gameOver() {
 
 function showGameOverScreen() {
     document.getElementById("finalScore").textContent += score.toString();
+    getScores();
     document.getElementById("gameOverUI").style.display = "flex";
+}
+
+function getScores() {
+    const wrapper = document.getElementById("scores");
+    wrapper.innerHTML = "";
+    // 점수 불러오기
+    const response = fetch(`${BASE_URL}/scoreboard`)
+    .then(response => response.json())
+    .then((scores)=>{
+        console.log(scores);
+        scores.sort((a,b) => {
+            if (a.score>b.score) {
+                return -1;
+            } else {
+                return 1;
+            }
+        })
+        scores.forEach((score, index) => {
+            const row = document.createElement("li");
+            row.className = "rank-row";
+            row.innerHTML = `
+                <p class="ranking">${index+1}</p>
+                <p class="name">${score.name}</p>
+                <p class="score">${score.score}</p>
+            `;
+            wrapper.appendChild(row);
+        })}
+    );
 }
 
 function restart() {
@@ -393,6 +424,20 @@ function restart() {
     setIntervals()
 }
 
+function submitScore(event) {
+    event.preventDefault();
+    const name = document.getElementById("nameInput").value;
+    const body = {name, score};
+    const response = fetch(`${BASE_URL}/new-score`, {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+        method:"post",
+    }).then(response => response.json()).then(()=>getScores());
+}
+
 window.restart = restart
+window.submitScore = submitScore
 gameLoop();
 setIntervals();
