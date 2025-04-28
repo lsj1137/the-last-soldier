@@ -1,6 +1,6 @@
 import { allSkills } from "./skills.js";
 
-const BASE_URL = "http://59.11.201.30:3000"
+const BASE_URL = "https://3jun.duckdns.org"
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
