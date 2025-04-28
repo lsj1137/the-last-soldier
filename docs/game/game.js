@@ -385,6 +385,9 @@ function gameOver() {
 function showGameOverScreen() {
     document.getElementById("finalScore").textContent += score.toString();
     getScores();
+    const button = document.getElementById("submitButton");
+    button.textContent = "점수 등록";
+    button.disabled = false;
     document.getElementById("gameOverUI").style.display = "flex";
 }
 
@@ -427,7 +430,26 @@ function submitScore(event) {
         },
         body: JSON.stringify(body),
         method:"post",
-    }).then(response => response.json()).then(()=>getScores());
+    })
+    .then(response => response.json())
+    .then(()=>{
+        const button = document.getElementById("submitButton");
+        button.textContent = "등록 완료";
+        button.disabled = true;
+    })
+    .then(()=>getScores())
+    .catch(()=>{
+        showToast("점수 등록에 실패했습니다.");
+    });
+}
+
+function showToast(content) {
+    const toastElement = document.getElementById("toast");
+    toastElement.textContent = content;
+    toastElement.style.opacity = 1;
+    setTimeout(()=>{
+        toastElement.style.opacity = 0;
+    }, 2000);
 }
 
 window.restart = restart
