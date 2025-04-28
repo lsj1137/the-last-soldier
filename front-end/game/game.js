@@ -1,6 +1,6 @@
 import { allSkills } from "./skills.js";
 
-const BASE_URL = "http://127.0.0.1:3000"
+const BASE_URL = "http://59.11.201.30:3000"
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -396,13 +396,6 @@ function getScores() {
     .then(response => response.json())
     .then((scores)=>{
         console.log(scores);
-        scores.sort((a,b) => {
-            if (a.score>b.score) {
-                return -1;
-            } else {
-                return 1;
-            }
-        })
         scores.forEach((score, index) => {
             const row = document.createElement("li");
             row.className = "rank-row";

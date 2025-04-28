@@ -24,7 +24,9 @@ app.get('/', (req, res) => {
 
 // 점수 조회
 app.get('/scoreboard', async (req, res) => {
-    const scores = await Score.findAll();
+    const scores = await Score.findAll().then((queryResult)=>{
+        return queryResult.sort((a,b)=>b.score-a.score).slice(0, 10);
+    });
     res.json(scores);
 });
 
