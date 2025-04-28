@@ -2,8 +2,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>My Game</title>
+    <title>The Last Soldier</title>
     <link rel="stylesheet" href="./style/style.css" />
+    <link rel="icon" href="./assets/favicon.png" type="image/png" />
   </head>
   <body>
     <canvas id="gameCanvas" width="1000" height="700"></canvas>
@@ -31,9 +32,10 @@
       </div>
       <form id="submitScore">
         <input id="nameInput" alt="name input" placeholder="이름" maxlength="12"></input>
-        <button onclick="submitScore(event)">점수 등록</button>
+        <button id="submitButton" onclick="submitScore(event)">점수 등록</button>
       </form>
       <button onclick="restart()">다시 시작</button>
     </div>
+    <div id="toast"></div>
   </body>
 </html>
