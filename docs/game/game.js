@@ -1,6 +1,6 @@
 import { allSkills } from "./skills.js";
 
-const BASE_URL = "https://3jun.duckdns.org"
+const BASE_URL = "https://3jun.store"
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
