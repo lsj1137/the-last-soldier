@@ -1,39 +1,16 @@
-import { initValues, getEnemies, getBullets, getOrbits, getLevel, getLevelUpStd, getLevelUpGap, getIsPaused, getPlayerSpeed, getPlayerWidth, getLife, getEnemySpawnTime, getEnemyWidth, getEnemySpeed, getShootTime, getBulletWidth, getBulletSpeed, getBulletDirection, getBulletHit, getScore, getStopZombies, getOrbitWidth, getOrbitSpeed, getOrbitRadius, getPlayer, setEnemies, setBullets, setOrbits, setLevel, setLevelUpStd, setLevelUpGap, setIsPaused, setPlayerSpeed, setPlayerWidth, setLife, setEnemySpawnTime, setEnemyWidth, setEnemySpeed, setShootTime, setBulletWidth, setBulletSpeed, setBulletDirection, setBulletHit, setScore, setStopZombies, setOrbitWidth, setOrbitSpeed, setOrbitRadius, setPlayer
+import { initValues, getEnemies, getBullets, getOrbits, getLevel, getLevelUpStd, getLevelUpGap, getIsPaused, getPlayerWidth, getLife, getEnemySpawnTime, getEnemySpeed, getShootTime, getBulletSpeed, getScore, getStopZombies, getOrbitWidth, getOrbitSpeed, getOrbitRadius, getPlayer, setEnemies, setBullets, setOrbits, setLevel, setLevelUpStd, setLevelUpGap, setIsPaused, setLife, setScore
 } from "./properties.js";
 import { backgroundImage, playerImage, enemyImage, bulletImage, heartImage, heartBlackImage, orbitImage } from "./images.js"
-import { screenWidth, screenHeight, bulletRatio } from "./constants.js";
-import { enemyUpgrade, spawnEnemy } from "./enemyLogic.js";
+import { screenWidth, screenHeight } from "./constants.js";
+import { enemyUpgrade, spawnEnemy } from "./enemy.js";
 import { showGameOverScreen, showLevelUpOptions, submitScore } from "./ui.js";
+import { movePlayer, setKeyEvents, shoot } from "./player.js";
 
-const canvas = document.getElementById("gameCanvas");
+export const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-
-let mouseX = 0;
-let mouseY = 0;
-
-const keys = {};
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
-canvas.addEventListener("mousemove", function (event) {
-    const rect = canvas.getBoundingClientRect();
-    mouseX = event.clientX - rect.left;
-    mouseY = event.clientY - rect.top;
-});
 
 let spawnInterval = null;
 let shootInterval = null;
-
-function shoot() {
-    let playerWidth = getPlayerWidth();
-    let bulletWidth = getBulletWidth();
-    let bulletHit = getBulletHit();
-    let player = getPlayer();
-    let bullets = getBullets();
-    let dx = mouseX - (player.x + playerWidth/2);
-    let dy = mouseY - (player.y + playerWidth/2);
-    bullets.push({ x: player.x+playerWidth/2-bulletWidth/2, y: player.y+playerWidth/2-bulletWidth/2, dx: dx, dy: dy, width: bulletWidth, height: bulletWidth*bulletRatio, hit: bulletHit});
-    setBullets(bullets);
-}
 
 function isColliding(a, b) {
     return (
@@ -51,7 +28,6 @@ function checkCollisions() {
     let player = getPlayer();
     const levelUpStd = getLevelUpStd();
     let score = getScore();
-
     for (let i = bullets.length - 1; i >= 0; i--) {
         const bullet = bullets[i];
         for (let j = enemies.length - 1; j >= 0; j--) {
@@ -111,10 +87,7 @@ function update() {
     let enemySpeed = getEnemySpeed();
     let orbitSpeed = getOrbitSpeed();
     let orbitRadius = getOrbitRadius();
-    if (keys["w"] || keys["ㅈ"] || keys["ArrowUp"]) player.y - player.speed > 0 ? player.y -= player.speed : 0;
-    if (keys["s"] || keys["ㄴ"] || keys["ArrowDown"]) player.y + player.speed < screenHeight - playerWidth ? player.y += player.speed : screenHeight - playerWidth;
-    if (keys["a"] || keys["ㅁ"] || keys["ArrowLeft"]) player.x - player.speed > 0 ? player.x -= player.speed : 0;
-    if (keys["d"] || keys["ㄹ"] || keys["ArrowRight"]) player.x + player.speed < screenWidth - playerWidth ? player.x += player.speed : screenWidth - playerWidth;
+    movePlayer();
     bullets.forEach(bullet => {
         let ratio = (bullet.dx**2 + bullet.dy**2) ** 0.5 / bulletSpeed
         bullet.x += bullet.dx / ratio
@@ -132,9 +105,9 @@ function update() {
         orbit.x = player.x + playerWidth/2  + orbitRadius * Math.cos(orbit.angle);
         orbit.y = player.y + playerWidth/2  + orbitRadius * Math.sin(orbit.angle);
     });
-    setBullets(bullets);
-    setEnemies(enemies);
-    setOrbits(orbits);
+    // setBullets(bullets);
+    // setEnemies(enemies);
+    // setOrbits(orbits);
 }
 
 function draw() {
@@ -225,5 +198,6 @@ function restart() {
 
 window.restart = restart
 window.submitScore = submitScore
+setKeyEvents();
 gameLoop();
 setIntervals();
