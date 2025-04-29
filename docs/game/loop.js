@@ -71,9 +71,6 @@ function checkCollisions() {
             break;
         }
     }
-    setBullets(bullets);
-    setOrbits(orbits);
-    setEnemies(enemies);
     setScore(score);
 }
 
@@ -105,9 +102,6 @@ function update() {
         orbit.x = player.x + playerWidth/2  + orbitRadius * Math.cos(orbit.angle);
         orbit.y = player.y + playerWidth/2  + orbitRadius * Math.sin(orbit.angle);
     });
-    // setBullets(bullets);
-    // setEnemies(enemies);
-    // setOrbits(orbits);
 }
 
 function draw() {
