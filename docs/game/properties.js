@@ -19,7 +19,7 @@ let enemySpeed = 1;
 let shootTime = 1200;
 let bulletWidth = 12;
 let bulletSpeed = 5;
-let bulletDirection = [];
+let bulletDirection = 1;
 let bulletHit = 1;
 let score = 0;
 let stopZombies = false;
@@ -52,7 +52,7 @@ function initValues() {
     bulletWidth = 12;
     bulletSpeed = 5;
     bulletHit = 1;
-    bulletDirection = [];
+    bulletDirection = 1;
     score = 0;
     levelUpStd = 50;
     levelUpGap = 50;
@@ -187,7 +187,7 @@ function getBulletDirection() {
     return bulletDirection;
 }
 function setBulletDirection(newBulletDirection){
-    bulletDirection = [...newBulletDirection];
+    bulletDirection = newBulletDirection;
 }
 
 function getBulletHit() {

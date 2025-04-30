@@ -150,7 +150,7 @@ function levelUp() {
     setIsPaused(true);
     clearIntervals();
     setLevel(getLevel()+1);
-    setLevelUpGap(getLevelUpGap()+10);
+    setLevelUpGap(getLevelUpGap()+10*getLevel()/2);
     setLevelUpStd(getLevelUpStd()+getLevelUpGap());
     enemyUpgrade();
     showLevelUpOptions();

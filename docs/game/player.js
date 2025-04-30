@@ -1,6 +1,6 @@
 import { bulletRatio, screenHeight, screenWidth } from "./constants.js";
 import { canvas } from "./loop.js";
-import { getBulletHit, getBullets, getBulletWidth, getPlayer, getPlayerWidth, setBullets } from "./properties.js";
+import { getBulletDirection, getBulletHit, getBullets, getBulletWidth, getPlayer, getPlayerWidth, setBullets } from "./properties.js";
 
 let mouseX = 0;
 let mouseY = 0;
@@ -32,10 +32,32 @@ function shoot() {
     let bulletHit = getBulletHit();
     let player = getPlayer();
     let bullets = getBullets();
-    let dx = mouseX - (player.x + playerWidth/2);
-    let dy = mouseY - (player.y + playerWidth/2);
-    bullets.push({ x: player.x+playerWidth/2-bulletWidth/2, y: player.y+playerWidth/2-bulletWidth/2, dx: dx, dy: dy, width: bulletWidth, height: bulletWidth*bulletRatio, hit: bulletHit});
-    setBullets(bullets);
+    const dx = mouseX - (player.x + playerWidth/2);
+    const dy = mouseY - (player.y + playerWidth/2);
+    let bulletDirections = getBulletDirection()
+    for (let i=0; i<bulletDirections; i++) {
+        const rotated = rotateVector(dx, dy, i*(Math.PI*2/bulletDirections));
+        let nx = rotated.x;
+        let ny = rotated.y;
+        bullets.push({ 
+            x: player.x+playerWidth/2 - bulletWidth/2,
+            y: player.y+playerWidth/2 - bulletWidth/2,
+            dx: nx,
+            dy: ny,
+            width: bulletWidth,
+            height: bulletWidth*bulletRatio,
+            hit: bulletHit
+        });
+    }
+}
+
+function rotateVector(x, y, angleRadians) {
+    const cos = Math.cos(angleRadians);
+    const sin = Math.sin(angleRadians);
+    return {
+        x: x * cos - y * sin,
+        y: x * sin + y * cos
+    };
 }
 
 export { movePlayer, setKeyEvents, shoot }

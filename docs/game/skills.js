@@ -1,6 +1,6 @@
 import { playerRatio, orbitRatio } from "./constants.js";
 import { hideLevelUpOptions } from "./ui.js";
-import { getBulletHit, getBulletSpeed, getBulletWidth, getEnemies, getLevel, getLife, getOrbitRadius, getOrbits, getOrbitSpeed, getOrbitWidth, getPlayer, getScore, getShootTime, setBulletHit, setBulletSpeed, setBulletWidth, setEnemies, setIsPaused, setLife, setOrbits, setOrbitSpeed, setPlayer, setScore, setShootTime, setStopZombies } from "./properties.js";
+import { getBulletDirection, getBulletHit, getBulletSpeed, getBulletWidth, getEnemies, getLevel, getLife, getOrbitRadius, getOrbits, getOrbitSpeed, getOrbitWidth, getPlayer, getScore, getShootTime, setBulletDirection, setBulletHit, setBulletSpeed, setBulletWidth, setEnemies, setIsPaused, setLife, setOrbits, setOrbitSpeed, setPlayer, setScore, setShootTime, setStopZombies } from "./properties.js";
 import { setIntervals } from "./loop.js";
 
 const allSkills = [
@@ -122,12 +122,9 @@ function selectLevelUpOptions() {
                 continue;
             }
         }
-        if (option.eng==="accurateMove" && getPlayer().width<=16) {
-            continue
-        }
-        if (option.eng==="orbitShield" && orbits.length>=3) {
-            continue
-        }
+        if (option.eng==="modifyMuzzle" && getBulletDirection()>3) continue;
+        if (option.eng==="accurateMove" && getPlayer().width<=16) continue;
+        if (option.eng==="orbitShield" && orbits.length>=3) continue;
         selected.push(option);
     }
     return selected;
@@ -149,7 +146,7 @@ function biggerBullet() {
 }
 
 function modifyMuzzle() {
-
+    setBulletDirection(getBulletDirection() + 1)
 }
 
 function fasterBullet() {
