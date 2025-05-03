@@ -13,7 +13,7 @@ const options = {
 };
 
 const app = express();
-const port = 443;
+const port = 8001;
 
 app.use(cors());
 app.use(express.json());
@@ -25,7 +25,7 @@ sequelize.sync() // 테이블 없으면 만들어줌
     .catch(err => {
         console.error('DB 연결 실패:', err);
     });
-
+ 
 app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
