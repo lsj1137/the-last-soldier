@@ -7,11 +7,6 @@ const cors = require('cors');
 const sequelize = require('./db.js');
 const Score = require('./models/Score.js');
 
-const options = {
-    key: fs.readFileSync(process.env.SSL_KEY_PATH, 'utf8'),
-    cert: fs.readFileSync(process.env.SSL_CERT_PATH, 'utf8')
-};
-
 const app = express();
 const port = 8001;
 
@@ -53,11 +48,6 @@ app.post('/new-score', async (req, res)=>{
     }
 })
 
-// 서버 시작
-https.createServer(options, app).listen(port, '0.0.0.0',() => {
+app.listen(port, '0.0.0.0',() => {
     console.log(`서버가 포트 ${port}번에서 실행 중!`);
 });
-
-// app.listen(port, '0.0.0.0',() => {
-//     console.log(`서버가 포트 ${port}번에서 실행 중!`);
-// });
